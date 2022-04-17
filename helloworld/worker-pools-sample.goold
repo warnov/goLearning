@@ -1,0 +1,47 @@
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+//Worker creator using a given channel and a waitinggroup
+func worker(ports chan int, wg *sync.WaitGroup, id int) {
+	//the work is specified here
+	//the work is: just take the value passed in the channel and write it down
+	//since there are only 100 workers to process 1024 jobs, each worker
+	//will have near 10 values in its channel to process all of them we use "range"
+	for p := range ports {
+		fmt.Printf("%d Processed by %d\n",p,id)
+		wg.Done()
+	}
+}
+
+func mainWorkerPools() {
+	//a buffered channel is created here
+	ports := make(chan int, 100)
+	//this is for blocking goroutines executions
+	var wg sync.WaitGroup
+	//here we initialize 100 workers
+	for i := 0; i < cap(ports); i++ {
+		go worker(ports, &wg, i)
+	}
+
+	//this is to shwo that nothing have been executed up here
+	fmt.Println("Just waiting...")
+	time.Sleep(2 * time.Second)
+
+	//this is where all the work is sent to the workers
+	for i := 1; i <= 1024; i++ {
+		//one job is added
+		wg.Add(1)
+		//the job parameter is sent to the channel: i, stating tyhe port number to check
+		//this value will land in thee buffer of the channel of a given worker in the pool
+		//that worker will be processing all the buffer through the "range" keyword
+		ports <- i
+		//some worker in the pool will receive the data in its channel and process it
+	}
+	wg.Wait()
+	close(ports)
+}
