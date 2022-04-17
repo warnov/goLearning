@@ -46,6 +46,7 @@ func main() {
 		fmt.Printf("Wrote %d bytes to stdout\n", s)
 	*/
 
+	//It is normal that this run forever
 	if _, err := io.Copy(&writer, &reader); err != nil {
 		log.Fatalln("Unable to read/write data")
 	}
