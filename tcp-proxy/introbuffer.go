@@ -22,7 +22,7 @@ func (fooWriter *FooWriter) Write(b []byte) (int, error) {
 	return os.Stdout.Write(b)
 }
 
-func main() {
+func mainBuffers() {
 	var (
 		reader FooReader
 		writer FooWriter
