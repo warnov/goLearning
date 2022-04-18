@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bufio"
+	"io"
 	"log"
 	"net"
 )
@@ -35,6 +35,7 @@ func echo(conn net.Conn) {
 
 	*/
 
+	/* MID version
 	reader := bufio.NewReader(conn)
 	s, err := reader.ReadString('\n')
 	if err != nil {
@@ -48,6 +49,14 @@ func echo(conn net.Conn) {
 		log.Fatalln("Unable to write data")
 	}
 	writer.Flush()
+	*/
+
+	//Latest and optimized version
+	//Copy data from io.Reader to io.Writer via io.Copy().
+	if _, err := io.Copy(conn, conn); err != nil {
+		log.Fatalln("Unable to read/write data")
+	}
+
 }
 
 func main() {
